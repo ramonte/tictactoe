@@ -99,7 +99,17 @@ m' line player column
     | column == 3 = if (last (line) == V) then [(head line)] ++ [(head (tail line))] ++ [player] else line
     | otherwise = []
 
+validMov :: [[Jogador]] -> Int -> Int -> Bool
+validMov board x y = if x > 3 || y > 3 || x < 1 || y < 1 then False else if (( (!!) ((!!) board (x-1)) (y-1)) /= V) then False else True
 
+--readMov :: [[Jogador]] -> Jogador -> (String, String)
+readMov board player str = do
+    hFlush stdout
+    putStr(str)
+    hFlush stdout
+    l <- getLine
+    c <- getLine
+    if (validMov board (read l::Int) (read c::Int)) == True then return (l,c) else readMov board player "Invalid. Try again\n"
 
 ---------- JOGABILIDADE 
 
@@ -107,10 +117,7 @@ m' line player column
 pvp board player = do
     showBoard board
     hFlush stdout
-    putStr("\n" ++ show player ++ ": line and column: ")
-    hFlush stdout
-    l <- getLine
-    c <- getLine
+    (l,c) <- readMov board player ("\n" ++ show player ++ ": line and column:\n")
     let tmp = movement board player (read l :: Int) (read c :: Int)
     let board = tmp
     let v = verify (getAllWinCases board) (getAllWinCases board)
@@ -124,10 +131,7 @@ pvia board player = do
     showBoard board
     if player == X then do
         hFlush stdout
-        putStr ("\n" ++ show player ++ ": line and column: ")
-        hFlush stdout
-        l <- getLine
-        c <- getLine
+        (l,c) <- readMov board player ("\n" ++ show player ++ ": line and column:\n")
         let tmp = movement board player (read l :: Int) (read c :: Int)
         let board = tmp
         let v = verify (getAllWinCases board) (getAllWinCases board)
